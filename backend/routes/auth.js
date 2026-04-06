@@ -9,7 +9,7 @@ router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // 1. Secure by Design: Hash the password before it ever touches the database
+    //Hash the password before it ever touches the database
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
@@ -26,7 +26,7 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: error.message });
     }
 
-    // 4. Generate the JSON Web Token (JWT)
+    // Generate the JSON Web Token (JWT)
     const token = jwt.sign(
       { id: newUser.id }, 
       process.env.JWT_SECRET || 'mzansi_super_secret', 
@@ -39,7 +39,7 @@ router.post('/register', async (req, res) => {
     });
 
   } catch (err) {
-    // 6. Catch any other unexpected server crashes
+    //Catch any other unexpected server crashes
     console.error("Unexpected Server Error:", err.message);
     res.status(500).json({ error: 'Internal Server Error' });
   }

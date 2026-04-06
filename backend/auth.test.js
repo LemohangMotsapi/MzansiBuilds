@@ -1,7 +1,7 @@
 const request = require('supertest');
 const app = require('./app');
 
-// 1. Generate a unique ID once when the test suite starts
+// Generate a unique ID once when the test suite starts
 const uniqueId = Date.now(); 
 const testUsername = `mzansicoder_${uniqueId}`;
 const testEmail = `coder_${uniqueId}@mzansi.com`;
