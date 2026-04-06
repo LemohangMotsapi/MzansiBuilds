@@ -8,8 +8,8 @@ describe('Authentication API', () => {
     // Sending fake http request 
       .post('/api/auth/register')
       .send({
-        username: 'mzansicoder',
-        email: 'coder@mzansi.com',
+        username: 'mzansicoder5',
+        email: 'coder5@mzansi.com',
         password: 'Password123!'
       });
 
@@ -18,7 +18,7 @@ describe('Authentication API', () => {
     expect(res.body).toHaveProperty('token');
     
 
-    expect(res.body.user).toHaveProperty('username', 'mzansicoder');
+    expect(res.body.user).toHaveProperty('username', 'mzansicoder5');
     expect(res.body.user).not.toHaveProperty('password_hash'); 
   });
 });

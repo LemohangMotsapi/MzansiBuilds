@@ -13,4 +13,7 @@ app.get('/',(req,res) =>{
     res.status(200).json({message:'MzansiBuilds API is running securely'});
 });
 
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
+
 module.exports = app;
