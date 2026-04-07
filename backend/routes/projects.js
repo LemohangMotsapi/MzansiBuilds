@@ -64,7 +64,7 @@ router.get('/', async(req,res) => {
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, tech_stack } = req.body;
+    const { title, description, tech_stack, status } = req.body;
     const userId = req.user.id; // From the JWT Bouncer
 
     // 1. Fetch the existing project to check ownership
@@ -86,7 +86,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     // 3. Update the database
     const { data: updatedProject, error: updateError } = await supabase
       .from('projects')
-      .update({ title, description, tech_stack })
+      .update({ title, description, tech_stack, status })
       .eq('id', id)
       .select()
       .single();
