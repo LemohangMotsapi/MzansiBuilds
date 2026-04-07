@@ -65,4 +65,17 @@ describe('Projects API', () => {
     expect(res.body.project).toHaveProperty('user_id'); // This proves the middleware extracted the ID!
   });
 
+
+  it('should fetch a list of all public projects', async () =>{
+    const res = await request(app)
+        .get('/api/projects');
+        
+        //console.log("Here is the raw data:", res.body.projects);
+        //console.log("Total Projects Found:", res.body.projects.length);
+
+        expect(res.statusCode).toBe(200);
+        expect(Array.isArray(res.body.projects)).toBeTruthy();
+        expect(res.body.projects.length).toBeGreaterThan(0);
+  });
+
 });

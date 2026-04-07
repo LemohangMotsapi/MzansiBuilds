@@ -42,4 +42,22 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 });
 
+router.get('/', async(req,res) => {
+    try{
+        const { data:projects, error } = await supabase
+            .from('projects')
+            .select('*')
+            .order('created_at', {ascending: false});
+        if(error){
+            console.error("Supabase Error:", error.message);
+            return res.status(500).json({error: 'Failed to fetch projects from database'});
+        }
+
+        res.status(200).json({projects:projects});
+    } catch(err){
+        console.error("Server Error:", err.message);
+        res.status(500).json({error: 'Internal Server Error'});
+    }
+});
+
 module.exports = router;
