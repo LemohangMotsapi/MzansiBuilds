@@ -78,4 +78,42 @@ describe('Projects API', () => {
         expect(res.body.projects.length).toBeGreaterThan(0);
   });
 
+  it('should allow the owner to update their project', async () => {
+    const postRes = await request(app)
+      .post('/api/projects')
+      .set('Authorization', `Bearer ${validToken}`)
+      .send({ title: 'Temporary Title', tech_stack: 'Node.js' });
+    
+    const projectId = postRes.body.project.id;
+
+    const updateRes = await request(app)
+      .put(`/api/projects/${projectId}`)
+      .set('Authorization', `Bearer ${validToken}`)
+      .send({ title: 'Updated Title', tech_stack: 'Node.js, Express' });
+
+    expect(updateRes.statusCode).toBe(200);
+    expect(updateRes.body.project.title).toBe('Updated Title');
+  });
+
+  it('should allow the owner to delete their project', async () => {
+    const postRes = await request(app)
+      .post('/api/projects')
+      .set('Authorization', `Bearer ${validToken}`)
+      .send({ title: 'Project To Delete', tech_stack: 'Python' });
+    
+    const projectId = postRes.body.project.id;
+
+    const deleteRes = await request(app)
+      .delete(`/api/projects/${projectId}`)
+      .set('Authorization', `Bearer ${validToken}`);
+
+
+    expect(deleteRes.statusCode).toBe(200);
+
+    const fetchDeletedRes = await request(app)
+      .get(`/api/projects/${projectId}`);
+  });
+
+
+
 });
