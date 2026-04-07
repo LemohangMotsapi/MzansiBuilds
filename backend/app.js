@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const projectRoutes = require('./routes/projects');
 const milestoneRoutes = require('./routes/milestones');
+const discussionRoutes = require('./routes/discussions');
 
 const app = express();
 
@@ -19,5 +20,6 @@ const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/projects/:projectId/milestones', milestoneRoutes);
+app.use('/api/projects/:projectId/discussions', discussionRoutes);
 
 module.exports = app;
