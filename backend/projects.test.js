@@ -114,6 +114,50 @@ describe('Projects API', () => {
       .get(`/api/projects/${projectId}`);
   });
 
+  describe('Milestones API', () => {
+    let testProjectId;
+
+    it('should setup a project for milestone testing', async () => {
+      const res = await request(app)
+        .post('/api/projects')
+        .set('Authorization', `Bearer ${validToken}`)
+        .send({ title: 'Milestone Test Project', tech_stack: 'React' });
+      
+      testProjectId = res.body.project.id;
+      expect(res.statusCode).toBe(201);
+    });
+
+    it('should allow the owner to add a milestone', async () => {
+      const res = await request(app)
+        .post(`/api/projects/${testProjectId}/milestones`)
+        .set('Authorization', `Bearer ${validToken}`)
+        .send({ title: 'System Architecture Designed', status: 'Completed' });
+      
+      expect(res.statusCode).toBe(201);
+      expect(res.body.milestone.title).toBe('System Architecture Designed');
+      expect(res.body.milestone.project_id).toBe(testProjectId);
+    });
+
+    it('should block milestones missing required fields', async () => {
+      const res = await request(app)
+        .post(`/api/projects/${testProjectId}/milestones`)
+        .set('Authorization', `Bearer ${validToken}`)
+        .send({ description: 'Forgot the title and status!' }); // Missing required fields
+      
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Title and status are required');
+    });
+
+    it('should publicly fetch all milestones for a project', async () => {
+      const res = await request(app)
+        .get(`/api/projects/${testProjectId}/milestones`);
+      
+      expect(res.statusCode).toBe(200);
+      expect(res.body.milestones.length).toBeGreaterThan(0);
+      expect(res.body.milestones[0].title).toBe('System Architecture Designed');
+    });
+  });
+
 
 
 });

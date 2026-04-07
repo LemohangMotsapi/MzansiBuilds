@@ -5,7 +5,8 @@ const authenticateToken = require('../middleware/auth');
 
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { title, description, tech_stack } = req.body;
+
+    const { title, description, tech_stack, support_required } = req.body;
 
     if (!title || !tech_stack) {
       return res.status(400).json({ error: 'Title and tech_stack are required' });
@@ -20,6 +21,7 @@ router.post('/', authenticateToken, async (req, res) => {
           title: title, 
           description: description, 
           tech_stack: tech_stack, 
+          support_required: support_required,
           user_id: userId 
         }
       ])
@@ -44,7 +46,7 @@ router.post('/', authenticateToken, async (req, res) => {
 
 router.get('/', async(req,res) => {
     try{
-        const { data:projects, error } = await supabase
+        const { data: projects, error } = await supabase
             .from('projects')
             .select('*')
             .order('created_at', {ascending: false});
@@ -53,21 +55,19 @@ router.get('/', async(req,res) => {
             return res.status(500).json({error: 'Failed to fetch projects from database'});
         }
 
-        res.status(200).json({projects:projects});
+        res.status(200).json({projects: projects});
     } catch(err){
         console.error("Server Error:", err.message);
         res.status(500).json({error: 'Internal Server Error'});
     }
 });
 
-// --- PUT: UPDATE A PROJECT ---
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, tech_stack, status } = req.body;
-    const userId = req.user.id; // From the JWT Bouncer
+    const { title, description, tech_stack, status, support_required } = req.body;
+    const userId = req.user.id; 
 
-    // 1. Fetch the existing project to check ownership
     const { data: project, error: fetchError } = await supabase
       .from('projects')
       .select('*')
@@ -78,15 +78,20 @@ router.put('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Project not found' });
     }
 
-    // 2. THE SECURITY CHECK: Does this user own this project?
     if (project.user_id !== userId) {
       return res.status(403).json({ error: 'Forbidden: You do not own this project' });
     }
 
-    // 3. Update the database
+  
     const { data: updatedProject, error: updateError } = await supabase
       .from('projects')
-      .update({ title, description, tech_stack, status })
+      .update({ 
+        title: title, 
+        description: description, 
+        tech_stack: tech_stack, 
+        status: status,
+        support_required: support_required
+      })
       .eq('id', id)
       .select()
       .single();
