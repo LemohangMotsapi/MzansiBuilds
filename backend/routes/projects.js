@@ -5,7 +5,6 @@ const authenticateToken = require('../middleware/auth');
 
 router.post('/', authenticateToken, async (req, res) => {
   try {
-
     const { title, description, tech_stack, support_required } = req.body;
 
     if (!title || !tech_stack) {
@@ -62,6 +61,34 @@ router.get('/', async(req,res) => {
     }
 });
 
+
+router.get('/celebrations', async (req, res) => {
+  try {
+    const { data: projects, error } = await supabase
+      .from('projects')
+      .select(`
+        *,
+        users ( username )
+      `) 
+      .eq('status', 'Completed')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error("Supabase Error:", error.message);
+      return res.status(500).json({ error: 'Failed to fetch the Celebration Wall' });
+    }
+
+    res.status(200).json({ 
+      message: 'Welcome to the Celebration Wall!',
+      projects: projects 
+    });
+
+  } catch (err) {
+    console.error("Server Error:", err.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
@@ -82,7 +109,6 @@ router.put('/:id', authenticateToken, async (req, res) => {
       return res.status(403).json({ error: 'Forbidden: You do not own this project' });
     }
 
-  
     const { data: updatedProject, error: updateError } = await supabase
       .from('projects')
       .update({ 

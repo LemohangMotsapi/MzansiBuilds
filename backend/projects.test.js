@@ -81,6 +81,7 @@ describe('Projects API', () => {
     expect(deleteRes.statusCode).toBe(200);
   });
 
+
   describe('Milestones API', () => {
     let testProjectId;
 
@@ -114,7 +115,6 @@ describe('Projects API', () => {
       expect(res.statusCode).toBe(200);
     });
   });
-
 
   describe('Discussions API', () => {
     let testProjectId;
@@ -158,4 +158,34 @@ describe('Projects API', () => {
     });
   });
 
-}); 
+
+  describe('Celebration Wall', () => {
+    it('should fetch only completed projects and include the author username', async () => {
+      // Setup: Create a project that is already 'Completed'
+      await request(app)
+        .post('/api/projects')
+        .set('Authorization', `Bearer ${validToken}`)
+        .send({ 
+          title: 'Finished Project', 
+          tech_stack: 'Vue.js',
+          status: 'Completed' 
+        });
+
+      const res = await request(app).get('/api/projects/celebrations');
+      
+      expect(res.statusCode).toBe(200);
+      expect(Array.isArray(res.body.projects)).toBeTruthy();
+      
+      res.body.projects.forEach(project => {
+        expect(project.status).toBe('Completed');
+      });
+
+      //Join Check: Ensure the users object (username) is there
+      if (res.body.projects.length > 0) {
+        expect(res.body.projects[0]).toHaveProperty('users');
+        expect(res.body.projects[0].users).toHaveProperty('username');
+      }
+    });
+  });
+
+});
