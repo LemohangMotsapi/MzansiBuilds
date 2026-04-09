@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext'; // Import the "Broadcast Station"
+import { Link } from 'react-router-dom';
 
 export default function Navbar() {
   // Pull 'user' and 'logout' from our Global Memory
@@ -28,9 +29,9 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            <button className="text-xs font-bold text-gray-400 hover:text-white transition-colors uppercase">
+            <Link to="/auth" className="text-xs font-bold text-gray-400 hover:text-white transition-colors uppercase">
               Log In
-            </button>
+            </Link>
           )}
         </div>
       </div>
