@@ -1,75 +1,112 @@
-import React, { useState, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext';
-import API from '../api';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Terminal, ArrowRight } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "sonner";
 
-export default function Auth() {
+const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
-  const [error, setError] = useState('');
-  const { login } = useContext(AuthContext);
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login, register } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    const endpoint = isLogin ? '/auth/login' : '/auth/register';
-    
+    setLoading(true);
     try {
-      const res = await API.post(endpoint, formData);
-      login(res.data.user, res.data.token);
-      window.location.href = '/'; // Send them back home after success
-    } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong');
+      if (isLogin) {
+        await login(email, password);
+      } else {
+        await register(username, email, password);
+      }
+      toast.success(isLogin ? "Welcome back!" : "Account created!");
+      navigate("/");
+    } catch {
+      toast.error(isLogin ? "Invalid credentials" : "Registration failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-6">
-      <div className="w-full max-w-sm border border-border-subtle bg-card-gray p-8 rounded-lg shadow-2xl">
-        <h2 className="text-2xl font-bold tracking-tighter mb-2">
-          {isLogin ? 'WELCOME BACK' : 'JOIN THE GUILD'}
-        </h2>
-        <p className="text-xs text-gray-500 mb-8 uppercase tracking-widest">
-          {isLogin ? 'Enter your dev credentials' : 'Start showcasing your builds'}
-        </p>
+    <div className="min-h-screen pt-16 flex items-center justify-center px-4">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(166_100%_50%/0.05),transparent_60%)]" />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-sm relative"
+      >
+        <div className="text-center mb-8">
+          <div className="w-12 h-12 rounded-lg bg-primary/10 neon-border flex items-center justify-center mx-auto mb-4">
+            <Terminal className="w-6 h-6 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground">
+            {isLogin ? "Welcome Back" : "Join MzansiBuilds"}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {isLogin ? "Sign in to ship your work" : "Start building in public"}
+          </p>
+        </div>
 
-        {error && <div className="mb-4 text-xs font-bold text-red-500 uppercase">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 glass neon-border rounded-xl p-6">
           {!isLogin && (
-            <input
-              type="text"
-              placeholder="USERNAME"
-              className="w-full bg-black border border-border-subtle p-3 text-xs focus:border-mzansi-green outline-none transition-all"
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              required
-            />
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1.5">Username</label>
+              <input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="devname"
+                className="w-full px-3 py-2.5 rounded-md bg-secondary border border-border text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+              />
+            </div>
           )}
-          <input
-            type="email"
-            placeholder="EMAIL"
-            className="w-full bg-black border border-border-subtle p-3 text-xs focus:border-mzansi-green outline-none transition-all"
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            required
-          />
-          <input
-            type="password"
-            placeholder="PASSWORD"
-            className="w-full bg-black border border-border-subtle p-3 text-xs focus:border-mzansi-green outline-none transition-all"
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            required
-          />
-          <button className="w-full bg-white text-black font-black py-3 text-xs uppercase hover:bg-mzansi-green transition-all mt-4">
-            {isLogin ? 'Log In' : 'Create Account'}
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1.5">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full px-3 py-2.5 rounded-md bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-1.5">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full px-3 py-2.5 rounded-md bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
+          >
+            {loading ? "Loading..." : isLogin ? "Sign In" : "Create Account"}
+            <ArrowRight className="w-4 h-4" />
           </button>
         </form>
 
-        <button 
-          onClick={() => setIsLogin(!isLogin)}
-          className="w-full mt-6 text-[10px] text-gray-500 hover:text-white uppercase tracking-widest transition-colors"
-        >
-          {isLogin ? "Don't have an account? Register" : "Already a member? Sign In"}
-        </button>
-      </div>
+        <p className="text-center text-sm text-muted-foreground mt-6">
+          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+          <button
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
+            className="text-primary hover:underline font-medium"
+          >
+            {isLogin ? "Sign up" : "Sign in"}
+          </button>
+        </p>
+      </motion.div>
     </div>
   );
-}
+};
+
+export default Auth;
