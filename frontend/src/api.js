@@ -1,19 +1,33 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API = axios.create({
-  baseURL: 'http://localhost:5000/api', // Point this to your Express backend
+const api = axios.create({
+  // Pointing exactly to your local Express server
+  baseURL: "http://localhost:5000/api",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-API.interceptors.request.use((req) => {
-  const token = localStorage.getItem('token');
-  
+// Automatically attach the JWT token to every request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
   if (token) {
-    // If a token exists, it sticks it in the "Authorization" header
-    // This allows the backend to know WHO is making the request
-    req.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  
-  return req;
+  return config;
 });
 
-export default API;
+// Global error handler for expired tokens
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/auth";
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;
