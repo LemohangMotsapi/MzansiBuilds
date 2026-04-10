@@ -5,7 +5,7 @@ const authenticateToken = require('../middleware/auth');
 
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { title, description, tech_stack, support_required } = req.body;
+    const { title, description, tech_stack, support_required, status} = req.body;
 
     if (!title || !tech_stack) {
       return res.status(400).json({ error: 'Title and tech_stack are required' });
@@ -21,7 +21,8 @@ router.post('/', authenticateToken, async (req, res) => {
           description: description, 
           tech_stack: tech_stack, 
           support_required: support_required,
-          user_id: userId 
+          user_id: userId,
+          status: status
         }
       ])
       .select()
