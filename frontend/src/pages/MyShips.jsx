@@ -15,7 +15,7 @@ const MyShips = () => {
 
   const fetchMyProjects = useCallback(async () => {
     try {
-      const res = await api.get("/projects/my");
+      const res = await api.get("/projects/my-ships");
       // Safety fallback depending on how your Express route sends the JSON
       setProjects(res.data.projects || res.data || []);
     } catch {
