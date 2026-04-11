@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Rocket } from "lucide-react";
+import { X, Rocket, HelpCircle } from "lucide-react";
 import api from "../api";
 import { toast } from "sonner";
 
@@ -10,6 +10,7 @@ const ProjectModal = ({ isOpen, onClose, refreshProjects }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tech_stack, setTechStack] = useState("");
+  const [support_required, setSupportRequired] = useState(""); // Added state
   const [status, setStatus] = useState("Researching");
   const [submitting, setSubmitting] = useState(false);
 
@@ -21,11 +22,18 @@ const ProjectModal = ({ isOpen, onClose, refreshProjects }) => {
     }
     setSubmitting(true);
     try {
-      await api.post("/projects", { title, description, tech_stack, status });
+      await api.post("/projects", { 
+        title, 
+        description, 
+        tech_stack, 
+        status, 
+        support_required // Added to payload
+      });
       toast.success("Project shipped to the feed! 🚀");
       setTitle("");
       setDescription("");
       setTechStack("");
+      setSupportRequired("");
       setStatus("Researching");
       if (refreshProjects) refreshProjects();
       onClose();
@@ -45,72 +53,71 @@ const ProjectModal = ({ isOpen, onClose, refreshProjects }) => {
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[100] flex items-center justify-center p-4"
         >
-          {/* Backdrop */}
           <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
 
-          {/* Modal */}
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
-            className="relative w-full max-w-lg glass neon-border rounded-xl p-6 z-10"
+            className="relative w-full max-w-lg glass neon-border rounded-xl p-6 z-10 overflow-hidden"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Rocket className="w-5 h-5 text-primary" />
                 Ship New Work
               </h2>
-              <button
-                onClick={onClose}
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
+              <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1.5">
-                  Project Title
-                </label>
+                <label className="block text-sm font-medium text-foreground mb-1.5">Project Title</label>
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. MzansiBuilds Platform"
-                  className="w-full px-3 py-2.5 rounded-md bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
+                  className="w-full px-3 py-2.5 rounded-md bg-secondary border border-border text-foreground text-sm focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-1">
+                   <label className="block text-sm font-medium text-foreground mb-1.5">Tech Stack</label>
+                   <input
+                     value={tech_stack}
+                     onChange={(e) => setTechStack(e.target.value)}
+                     placeholder="React, Supabase"
+                     className="w-full px-3 py-2.5 rounded-md bg-secondary border border-border text-foreground text-sm font-mono outline-none focus:ring-1 focus:ring-primary"
+                   />
+                </div>
+                <div className="col-span-1">
+                   <label className="block text-sm font-medium text-primary mb-1.5 flex items-center gap-1">
+                     <HelpCircle className="w-3.5 h-3.5" /> Support Needed
+                   </label>
+                   <input
+                     value={support_required}
+                     onChange={(e) => setSupportRequired(e.target.value)}
+                     placeholder="e.g. UI Design help"
+                     className="w-full px-3 py-2.5 rounded-md bg-secondary border border-border text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
+                   />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1.5">
-                  Description
-                </label>
+                <label className="block text-sm font-medium text-foreground mb-1.5">Description</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
                   placeholder="What are you building and why?"
-                  className="w-full px-3 py-2.5 rounded-md bg-secondary border border-border text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors resize-none"
+                  className="w-full px-3 py-2.5 rounded-md bg-secondary border border-border text-foreground text-sm focus:ring-1 focus:ring-primary outline-none resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1.5">
-                  Tech Stack
-                </label>
-                <input
-                  value={tech_stack}
-                  onChange={(e) => setTechStack(e.target.value)}
-                  placeholder="React, Node.js, Supabase"
-                  className="w-full px-3 py-2.5 rounded-md bg-secondary border border-border text-foreground text-sm font-mono placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors"
-                />
-                <p className="text-xs text-muted-foreground mt-1">Comma-separated</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-1.5">
-                  Status
-                </label>
+                <label className="block text-sm font-medium text-foreground mb-1.5">Status</label>
                 <div className="flex gap-2">
                   {statusOptions.map((opt) => (
                     <button
@@ -118,9 +125,7 @@ const ProjectModal = ({ isOpen, onClose, refreshProjects }) => {
                       type="button"
                       onClick={() => setStatus(opt)}
                       className={`flex-1 px-3 py-2 rounded-md text-xs font-mono border transition-all ${
-                        status === opt
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border bg-secondary text-muted-foreground hover:text-foreground"
+                        status === opt ? "border-primary bg-primary/10 text-primary" : "border-border bg-secondary text-muted-foreground"
                       }`}
                     >
                       {opt}
@@ -132,7 +137,7 @@ const ProjectModal = ({ isOpen, onClose, refreshProjects }) => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-2.5 rounded-md text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-2.5 rounded-md text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 shadow-[0_0_15px_rgba(34,197,94,0.3)]"
               >
                 {submitting ? "Shipping..." : "Ship It 🚀"}
               </button>

@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import api from "../api";
 import ProjectCard from "../components/ProjectCard";
 import ProjectModal from "../components/ProjectModal";
+import EditProjectModal from "../components/EditProjectModal"; // NEW IMPORT
 import { Navigate } from "react-router-dom";
 
 const MyShips = () => {
@@ -12,11 +13,14 @@ const MyShips = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  
+  // NEW STATES FOR EDITING
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [projectToEdit, setProjectToEdit] = useState(null);
 
   const fetchMyProjects = useCallback(async () => {
     try {
       const res = await api.get("/projects/my-ships");
-      // Safety fallback depending on how your Express route sends the JSON
       setProjects(res.data.projects || res.data || []);
     } catch {
       console.error("Failed to fetch my projects");
@@ -28,6 +32,12 @@ const MyShips = () => {
   useEffect(() => {
     if (user) fetchMyProjects();
   }, [user, fetchMyProjects]);
+
+  // NEW HANDLER FOR EDITING
+  const handleEditInitiated = (project) => {
+    setProjectToEdit(project);
+    setEditModalOpen(true);
+  };
 
   if (!authLoading && !user) return <Navigate to="/auth" />;
 
@@ -81,12 +91,25 @@ const MyShips = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
               >
-                <ProjectCard project={project} onRefresh={fetchMyProjects} />
+                {/* ADDED onEdit PROP HERE */}
+                <ProjectCard 
+                  project={project} 
+                  onRefresh={fetchMyProjects} 
+                  onEdit={() => handleEditInitiated(project)} 
+                />
               </motion.div>
             ))}
           </div>
         )}
       </div>
+
+      {/* NEW EDIT MODAL */}
+      <EditProjectModal 
+        isOpen={editModalOpen}
+        project={projectToEdit}
+        onClose={() => setEditModalOpen(false)}
+        onUpdate={fetchMyProjects}
+      />
 
       <ProjectModal
         isOpen={modalOpen}
