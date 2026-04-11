@@ -7,37 +7,32 @@ const authenticateToken = require('../middleware/auth');
 router.post('/', authenticateToken, async (req, res) => {
   try {
     const { projectId } = req.params;
-    const { content, type } = req.body;
+    const { content, parent_id, type } = req.body; // type is now optional
     const userId = req.user.id;
 
-    if (!content || !type) {
-      return res.status(400).json({ error: 'Content and type (COMMENT/QUESTION) are required' });
+    // Only content is strictly required now
+    if (!content) {
+      return res.status(400).json({ error: 'Message content is required' });
     }
 
-    const { data: discussion, error } = await supabase
+    const { data: post, error } = await supabase
       .from('project_discussions')
-      .insert([
-        { 
-          project_id: projectId, 
-          user_id: userId, 
-          content: content, 
-          type: type, 
-          is_resolved: false 
-        }
-      ])
-      .select()
+      .insert([{ 
+        project_id: parseInt(projectId), 
+        user_id: userId,
+        content: content, 
+        parent_id: parent_id ? parseInt(parent_id): null,
+        type: type || 'COMMENT' // Default to COMMENT if not provided
+      }])
+      .select('*, users(username)')
       .single();
 
     if (error) {
-      console.error("Supabase Error:", error.message);
-      throw error;
+      console.error("Supabase Insert Error:", error.message);
+      return res.status(500).json({ error: 'Failed to post message' });
     }
 
-    res.status(201).json({ 
-      message: 'Discussion post created successfully', 
-      discussion: discussion 
-    });
-
+    res.status(201).json({ message: 'Post synchronized', post });
   } catch (err) {
     console.error("Server Error:", err.message);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -54,7 +49,7 @@ router.get('/', async (req, res) => {
         *,
         users ( username )
       `) // This joins the users table so we can see WHO posted it!
-      .eq('project_id', projectId)
+      .eq('project_id', parseInt(projectId))
       .order('created_at', { ascending: true });
 
     if (error) throw error;
