@@ -10,7 +10,7 @@ const CelebrationWall = () => {
   useEffect(() => {
     const fetchShipped = async () => {
       try {
-        const res = await api.get("/projects?status=Shipped");
+        const res = await api.get("/projects/celebrations?status=Shipped");
         setProjects(res.data.projects || res.data || []);
       } catch {
         console.error("Failed to fetch shipped projects");

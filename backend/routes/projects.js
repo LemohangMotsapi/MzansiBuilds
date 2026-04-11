@@ -71,7 +71,7 @@ router.get('/celebrations', async (req, res) => {
         *,
         users ( username )
       `) 
-      .eq('status', 'Completed')
+      .eq('status', 'Shipped')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -161,6 +161,22 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     res.status(200).json({ message: 'Project successfully deleted' });
   } catch (err) {
     console.error("Server Error:", err.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.get('/my-ships', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { data: projects, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('user_id', userId) // Only fetch projects owned by the logged-in user
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.status(200).json({ projects });
+  } catch (err) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
