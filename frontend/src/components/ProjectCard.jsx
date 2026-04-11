@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Hand, ExternalLink, Trash2, Edit3, PlusCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { useAuth } from "../context/AuthContext";
 import api from "../api";
 import { toast } from "sonner";
@@ -13,9 +14,9 @@ const statusConfig = {
 
 const ProjectCard = ({ project, onRefresh }) => {
   const { user } = useAuth();
+  const navigate = useNavigate(); // Initialize navigation
   const config = statusConfig[project.status] || statusConfig["Researching"];
   
-  // Check if the current logged-in user is the owner of this project
   const isOwner = user && user.id === project.user_id;
 
   const techTags = project.tech_stack
@@ -23,7 +24,7 @@ const ProjectCard = ({ project, onRefresh }) => {
     : [];
 
   const handleRaiseHand = async (e) => {
-    e.stopPropagation(); // Prevent card click navigation later
+    e.stopPropagation(); 
     if (!user) {
       toast.error("Sign in to collaborate");
       return;
@@ -38,7 +39,7 @@ const ProjectCard = ({ project, onRefresh }) => {
   };
 
   const handleDelete = async (e) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Stop navigation from firing
     if (!window.confirm("Are you sure you want to delete this project? This cannot be undone.")) return;
 
     try {
@@ -56,7 +57,8 @@ const ProjectCard = ({ project, onRefresh }) => {
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -2 }}
       transition={{ duration: 0.3 }}
-      className="rounded-lg bg-card border border-border hover:neon-border transition-all duration-300 overflow-hidden"
+      onClick={() => navigate(`/project/${project.id}`)} // Navigate on click
+      className="rounded-lg bg-card border border-border hover:neon-border transition-all duration-300 overflow-hidden cursor-pointer"
     >
       <div className="p-5">
         {/* Header */}
@@ -105,11 +107,13 @@ const ProjectCard = ({ project, onRefresh }) => {
           )}
 
           <div className="flex items-center gap-2">
-            {/* If I OWN the project: Show Management Buttons */}
             {isOwner ? (
               <div className="flex items-center gap-2">
                 <button
-                  onClick={(e) => { e.stopPropagation(); /* Add Milestone logic later */ }}
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    /* We will trigger Milestone Modal here later */
+                  }}
                   className="flex items-center gap-1 px-2 py-1.5 rounded-md text-[10px] font-bold bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all"
                   title="Log Milestone"
                 >
@@ -117,6 +121,7 @@ const ProjectCard = ({ project, onRefresh }) => {
                   LOG
                 </button>
                 <button
+                  onClick={(e) => e.stopPropagation()} // Stop navigation
                   className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
                   title="Edit Project"
                 >
@@ -131,7 +136,6 @@ const ProjectCard = ({ project, onRefresh }) => {
                 </button>
               </div>
             ) : (
-              /* If I DON'T own the project: Show Raise Hand or Shipped Link */
               <>
                 {user && project.status !== "Shipped" && (
                   <button

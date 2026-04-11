@@ -3,43 +3,34 @@ const router = express.Router();
 const supabase = require('../db'); 
 const authenticateToken = require('../middleware/auth');
 
-router.post('/', authenticateToken, async (req, res) => {
+// 1. STATIC ROUTES FIRST (Prevents shadowing)
+router.get('/my-ships', authenticateToken, async (req, res) => {
   try {
-    const { title, description, tech_stack, support_required, status} = req.body;
-
-    if (!title || !tech_stack) {
-      return res.status(400).json({ error: 'Title and tech_stack are required' });
-    }
-
     const userId = req.user.id;
-
-    const { data: project, error } = await supabase
+    const { data: projects, error } = await supabase
       .from('projects')
-      .insert([
-        { 
-          title: title, 
-          description: description, 
-          tech_stack: tech_stack, 
-          support_required: support_required,
-          user_id: userId,
-          status: status
-        }
-      ])
-      .select()
-      .single();
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error("Supabase Error:", error.message);
-      return res.status(500).json({ error: 'Failed to save project to database' });
-    }
-
-    res.status(201).json({
-      message: 'Project created successfully',
-      project: project
-    });
-
+    if (error) throw error;
+    res.status(200).json({ projects });
   } catch (err) {
-    console.error("Server Error:", err.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.get('/celebrations', async (req, res) => {
+  try {
+    const { data: projects, error } = await supabase
+      .from('projects')
+      .select('*, users ( username )') 
+      .eq('status', 'Shipped')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.status(200).json({ projects });
+  } catch (err) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
@@ -50,42 +41,44 @@ router.get('/', async(req,res) => {
             .from('projects')
             .select('*')
             .order('created_at', {ascending: false});
-        if(error){
-            console.error("Supabase Error:", error.message);
-            return res.status(500).json({error: 'Failed to fetch projects from database'});
-        }
-
+        if(error) throw error;
         res.status(200).json({projects: projects});
     } catch(err){
-        console.error("Server Error:", err.message);
         res.status(500).json({error: 'Internal Server Error'});
     }
 });
 
-
-router.get('/celebrations', async (req, res) => {
+// 2. DYNAMIC PARAMETER ROUTE LAST
+router.get('/:id', async (req, res) => {
+  //console.log("!!! ATTENTION: Backend is fetching ID:", req.params.id);
   try {
-    const { data: projects, error } = await supabase
+    const { id } = req.params;
+    // CRITICAL: Convert string "65" to Integer for your int8 column
+    const { data: project, error } = await supabase
       .from('projects')
-      .select(`
-        *,
-        users ( username )
-      `) 
-      .eq('status', 'Shipped')
-      .order('created_at', { ascending: false });
+      .select('*, users ( username )')
+      .eq('id', parseInt(id))
+      .single();
 
-    if (error) {
-      console.error("Supabase Error:", error.message);
-      return res.status(500).json({ error: 'Failed to fetch the Celebration Wall' });
-    }
-
-    res.status(200).json({ 
-      message: 'Welcome to the Celebration Wall!',
-      projects: projects 
-    });
-
+    if (error || !project) return res.status(404).json({ error: 'Project not found' });
+    res.status(200).json({ project });
   } catch (err) {
-    console.error("Server Error:", err.message);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// 3. MUTATION ROUTES (POST, PUT, DELETE)
+router.post('/', authenticateToken, async (req, res) => {
+  try {
+    const { title, description, tech_stack, support_required, status} = req.body;
+    const userId = req.user.id;
+    const { data: project, error } = await supabase
+      .from('projects')
+      .insert([{ title, description, tech_stack, support_required, user_id: userId, status }])
+      .select().single();
+    if (error) throw error;
+    res.status(201).json({ project });
+  } catch (err) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
@@ -93,41 +86,16 @@ router.get('/celebrations', async (req, res) => {
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, tech_stack, status, support_required } = req.body;
-    const userId = req.user.id; 
-
-    const { data: project, error: fetchError } = await supabase
+    const userId = req.user.id;
+    const { data: updatedProject, error } = await supabase
       .from('projects')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (fetchError || !project) {
-      return res.status(404).json({ error: 'Project not found' });
-    }
-
-    if (project.user_id !== userId) {
-      return res.status(403).json({ error: 'Forbidden: You do not own this project' });
-    }
-
-    const { data: updatedProject, error: updateError } = await supabase
-      .from('projects')
-      .update({ 
-        title: title, 
-        description: description, 
-        tech_stack: tech_stack, 
-        status: status,
-        support_required: support_required
-      })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (updateError) throw updateError;
-
-    res.status(200).json({ message: 'Project updated', project: updatedProject });
+      .update(req.body)
+      .eq('id', parseInt(id))
+      .eq('user_id', userId)
+      .select().single();
+    if (error) throw error;
+    res.status(200).json({ project: updatedProject });
   } catch (err) {
-    console.error("Server Error:", err.message);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
@@ -136,46 +104,13 @@ router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
-
-    const { data: project, error: fetchError } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (fetchError || !project) {
-      return res.status(404).json({ error: 'Project not found' });
-    }
-
-    if (project.user_id !== userId) {
-      return res.status(403).json({ error: 'Forbidden: You do not own this project' });
-    }
-
-    const { error: deleteError } = await supabase
+    const { error } = await supabase
       .from('projects')
       .delete()
-      .eq('id', id);
-
-    if (deleteError) throw deleteError;
-
-    res.status(200).json({ message: 'Project successfully deleted' });
-  } catch (err) {
-    console.error("Server Error:", err.message);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-router.get('/my-ships', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { data: projects, error } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('user_id', userId) // Only fetch projects owned by the logged-in user
-      .order('created_at', { ascending: false });
-
+      .eq('id', parseInt(id))
+      .eq('user_id', userId);
     if (error) throw error;
-    res.status(200).json({ projects });
+    res.status(200).json({ message: 'Deleted' });
   } catch (err) {
     res.status(500).json({ error: 'Internal Server Error' });
   }

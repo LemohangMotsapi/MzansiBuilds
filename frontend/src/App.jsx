@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import MyShips from "./pages/MyShips";
 import CelebrationWall from "./pages/CelebrationWall";
+import ProjectDetail from "./pages/ProjectDetail";
 
 // Setup React Query for data fetching
 const queryClient = new QueryClient();
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/my-ships" element={<MyShips />} />
             <Route path="/celebration" element={<CelebrationWall />} />
+            <Route path="/project/:id" element={<ProjectDetail />} />
             {/* Added a fallback route just in case */}
             <Route path="*" element={<div className="p-24 text-center">404 - Log Not Found</div>} />
           </Routes>
