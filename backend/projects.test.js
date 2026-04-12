@@ -177,7 +177,7 @@ describe('Projects API', () => {
       expect(Array.isArray(res.body.projects)).toBeTruthy();
       
       res.body.projects.forEach(project => {
-        expect(project.status).toBe('Completed');
+        expect(project.status).toBe('Shipped');
       });
 
       //Join Check: Ensure the users object (username) is there
