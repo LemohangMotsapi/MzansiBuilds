@@ -29,7 +29,7 @@ router.post('/register', async (req, res) => {
     // Generate the JSON Web Token (JWT)
     const token = jwt.sign(
       { id: newUser.id }, 
-      process.env.JWT_SECRET || 'mzansi_super_secret', 
+      process.env.JWT_SECRET, 
       { expiresIn: '1h' }
     );
 
