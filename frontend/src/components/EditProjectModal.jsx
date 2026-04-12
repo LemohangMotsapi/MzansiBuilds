@@ -30,7 +30,7 @@ const EditProjectModal = ({ project, isOpen, onClose, onUpdate }) => {
       await api.put(`/projects/${project.id}`, formData);
       
       if (formData.status === "Shipped") {
-        toast.success("PROJECT_SHIPPED: Added to Celebration Wall! 🚀", { duration: 5000 });
+        toast.success("PROJECT SHIPPED: Added to Celebration Wall!", { duration: 5000 });
       } else {
         toast.success("Project logs updated successfully.");
       }
@@ -49,7 +49,7 @@ const EditProjectModal = ({ project, isOpen, onClose, onUpdate }) => {
       <div className="bg-card border border-border w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-6 border-b border-border flex justify-between items-center bg-secondary/10">
           <h2 className="text-xl font-bold font-mono flex items-center gap-2 text-primary">
-            <Cpu className="w-5 h-5" /> OVERRIDE_PROJECT_DATA
+            <Cpu className="w-5 h-5" /> EDIT PROJECT
           </h2>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
             <X className="w-6 h-6" />
@@ -102,7 +102,7 @@ const EditProjectModal = ({ project, isOpen, onClose, onUpdate }) => {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-mono uppercase text-muted-foreground">Project Intelligence (Description)</label>
+            <label className="text-[10px] font-mono uppercase text-muted-foreground">Project Description</label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -115,7 +115,7 @@ const EditProjectModal = ({ project, isOpen, onClose, onUpdate }) => {
             className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-[0_0_20px_-5px_rgba(34,197,94,0.4)]"
           >
             {formData.status === "Shipped" ? <Rocket className="w-5 h-5" /> : <Save className="w-5 h-5" />}
-            {formData.status === "Shipped" ? "DECODE_AND_SHIP" : "UPDATE_SYSTEM_LOGS"}
+            {formData.status === "Shipped" ? "DECODE AND SHIP" : "UPDATE PROJECT"}
           </button>
         </form>
       </div>

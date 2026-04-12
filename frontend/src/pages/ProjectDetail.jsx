@@ -44,7 +44,7 @@ const ProjectDetail = () => {
     fetchProjectDetails();
   }, [fetchProjectDetails]);
 
-  if (loading) return <div className="p-20 text-center font-mono animate-pulse">ACCESSING_DATA...</div>;
+  if (loading) return <div className="p-20 text-center font-mono animate-pulse">ACCESSING DATA...</div>;
   if (!project) return null;
 
   return (
@@ -52,7 +52,7 @@ const ProjectDetail = () => {
       {/* Navigation */}
       <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-muted-foreground hover:text-primary mb-6 group">
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        <span className="font-mono text-sm">BACK_TO_FEED</span>
+        <span className="font-mono text-sm">BACK TO FEED</span>
       </button>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -90,7 +90,7 @@ const ProjectDetail = () => {
                 ))
               ) : (
                 <div className="p-8 border border-dashed border-border rounded-lg text-center text-muted-foreground text-sm font-mono">
-                  NO_MILESTONES_LOGGED_YET
+                  NO MILESTONES LOGGED YET
                 </div>
               )}
             </div>
@@ -100,7 +100,7 @@ const ProjectDetail = () => {
           <section>
             <div className="flex items-center gap-2 mb-6 border-b border-border pb-2">
               <MessageSquare className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-semibold">Discussion & Q&A</h2>
+              <h2 className="text-xl font-semibold">Discussion Forum</h2>
             </div>
             
             <DiscussionSection 
@@ -138,7 +138,7 @@ const ProjectDetail = () => {
             </div>
 
             <button className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-              <Share2 className="w-4 h-4" /> SHARE_PROJECT
+              <Share2 className="w-4 h-4" /> SHARE PROJECT
             </button>
           </div>
         </aside>

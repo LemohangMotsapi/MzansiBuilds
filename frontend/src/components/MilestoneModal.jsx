@@ -88,10 +88,10 @@ const MilestoneModal = ({ isOpen, onClose, projectId, onRefresh }) => {
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
               >
-                <option value="Feature Added">🚀 Feature Added</option>
-                <option value="Bug Fixed">🐛 Bug Fixed</option>
-                <option value="UI Refined">🎨 UI Refined</option>
-                <option value="Major Update">⭐ Major Update</option>
+                <option value="Feature Added">Feature Added</option>
+                <option value="Bug Fixed">Bug Fixed</option>
+                <option value="UI Refined">UI Refined</option>
+                <option value="Major Update">Major Update</option>
               </select>
             </div>
 
@@ -103,10 +103,10 @@ const MilestoneModal = ({ isOpen, onClose, projectId, onRefresh }) => {
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  SYNCING_LOG...
+                  SYNCING LOG...
                 </>
               ) : (
-                "COMMIT_TO_TIMELINE"
+                "COMMIT TO TIMELINE"
               )}
             </button>
           </form>

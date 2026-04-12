@@ -97,7 +97,7 @@ const DiscussionSection = ({ projectId, discussions, onRefresh, user }) => {
         </form>
       ) : (
         <div className="p-8 border border-dashed border-border rounded-xl text-center text-muted-foreground font-mono text-xs">
-          AUTH_REQUIRED_FOR_COLLABORATION
+          AUTH REQUIRED FOR COLLABORATION
         </div>
       )}
 
@@ -201,7 +201,7 @@ const DiscussionSection = ({ projectId, discussions, onRefresh, user }) => {
           })
         ) : (
           <div className="py-20 text-center border border-dashed border-border rounded-2xl">
-            <p className="text-sm text-muted-foreground font-mono italic">NO_DISCUSSIONS_LOGGED_YET</p>
+            <p className="text-sm text-muted-foreground font-mono italic">NO DISCUSSIONS LOGGED YET</p>
           </div>
         )}
       </div>
