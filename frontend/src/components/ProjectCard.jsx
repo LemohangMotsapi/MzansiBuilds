@@ -75,9 +75,9 @@ const ProjectCard = ({ project, onRefresh, onEdit }) => {
               <h3 className="font-semibold text-foreground truncate text-base">
                 {project.title}
               </h3>
-              {project.username && (
+              {project.users?.username && (
                 <p className="text-xs font-mono text-muted-foreground mt-0.5">
-                  @{project.username}
+                  @{project.users.username}
                 </p>
               )}
             </div>
