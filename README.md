@@ -51,8 +51,7 @@ The primary goal of MzansiBuilds is to provide a transparent live feed of develo
 ## Local Setup
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/](https://github.com/)[LemohangMotsapi]/MzansiBuilds.git
-    ```
+    git clone https://github.com/LemohangMotsapi/MzansiBuilds.git
 2.  **Backend Setup:**
     * Navigate to `/backend`
     * Run `npm install`
