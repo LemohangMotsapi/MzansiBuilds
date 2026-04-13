@@ -139,7 +139,7 @@ const ProjectModal = ({ isOpen, onClose, refreshProjects }) => {
                 disabled={submitting}
                 className="w-full py-2.5 rounded-md text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 shadow-[0_0_15px_rgba(34,197,94,0.3)]"
               >
-                {submitting ? "Shipping..." : "Ship It 🚀"}
+                {submitting ? "Shipping..." : "Ship It "}
               </button>
             </form>
           </motion.div>
