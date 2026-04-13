@@ -12,7 +12,7 @@ const Navbar = () => {
   const navLinks = [
     { to: "/", label: "Feed", icon: Terminal },
     { to: "/my-ships", label: "My Ships", icon: Rocket },
-    { to: "/celebration", label: "Hall of Fame", icon: Trophy },
+    { to: "/celebration", label: "Celebtration Wall", icon: Trophy },
   ];
 
   const isActive = (path) => location.pathname === path;
