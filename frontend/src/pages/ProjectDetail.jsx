@@ -4,24 +4,22 @@ import { motion } from "framer-motion";
 import { ArrowLeft, MessageSquare, Milestone, Share2 } from "lucide-react";
 import api from "../api";
 import { toast } from "sonner";
-import { useAuth } from "../context/AuthContext"; // Added for discussion permissions
-import DiscussionSection from "../components/DiscussionSection"; // Added implementation
+import { useAuth } from "../context/AuthContext";
+import DiscussionSection from "../components/DiscussionSection";
 
 const ProjectDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth(); // Access current logged-in user
+  const { user } = useAuth();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchProjectDetails = useCallback(async () => {
     setLoading(true);
     try {
-      // 1. Fetch main project first
       const projRes = await api.get(`/projects/${id}`);
       const baseData = projRes.data.project;
 
-      // 2. Fetch extras using allSettled to prevent empty tables from crashing the UI
       const [mRes, dRes] = await Promise.allSettled([
         api.get(`/projects/${id}/milestones`),
         api.get(`/projects/${id}/discussions`),
@@ -67,8 +65,7 @@ const ProjectDetail = () => {
           {/* Engineering Timeline */}
           <section>
             <div className="flex items-center gap-2 mb-6 border-b border-border pb-2">
-              <Milestone className="w-5 h-5 text-primary" />
-              <h2 className="text-xl font-semibold">Engineering Timeline</h2>
+              <h2 className="text-xl font-semibold">Timeline</h2>
             </div>
             
             <div className="space-y-6">
@@ -99,7 +96,6 @@ const ProjectDetail = () => {
           {/* Discussion System - LIVE IMPLEMENTATION */}
           <section>
             <div className="flex items-center gap-2 mb-6 border-b border-border pb-2">
-              <MessageSquare className="w-5 h-5 text-primary" />
               <h2 className="text-xl font-semibold">Discussion Forum</h2>
             </div>
             

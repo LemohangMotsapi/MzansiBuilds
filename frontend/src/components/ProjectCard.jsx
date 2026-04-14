@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Hand, ExternalLink, Trash2, Edit3, PlusCircle, HelpCircle } from "lucide-react";
+import { ExternalLink, Trash2, Edit3, PlusCircle, HelpCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import api from "../api";
@@ -25,7 +25,6 @@ const ProjectCard = ({ project, onRefresh, onEdit }) => {
     ? project.tech_stack.split(",").map((t) => t.trim()).filter(Boolean)
     : [];
 
-  // Updated handler to trigger collaboration and auto-comment
   const handleRaiseHand = async (e) => {
     e.stopPropagation(); 
     if (!user) {
@@ -33,14 +32,12 @@ const ProjectCard = ({ project, onRefresh, onEdit }) => {
       return;
     }
     try {
-      // Triggers the backend logic (DB log + System Comment)
       await api.post(`/projects/${project.id}/collaborate`);
-      toast.success("HAND_RAISED: Owner notified via discussion thread! ✋");
+      toast.success("Interest logged: Owner notified via discussion thread!"); 
       
-      // Refresh to update the hand count badge instantly
       if (onRefresh) onRefresh();
     } catch (err) {
-      const errorMsg = err.response?.data?.error || "Could not raise hand";
+      const errorMsg = err.response?.data?.error || "Could not log interest";
       toast.error(errorMsg);
     }
   };
@@ -69,7 +66,6 @@ const ProjectCard = ({ project, onRefresh, onEdit }) => {
         className="rounded-lg bg-card border border-border hover:neon-border transition-all duration-300 overflow-hidden cursor-pointer"
       >
         <div className="p-5">
-          {/* Header */}
           <div className="flex items-start justify-between mb-2">
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-foreground truncate text-base">
@@ -87,18 +83,14 @@ const ProjectCard = ({ project, onRefresh, onEdit }) => {
             </span>
           </div>
 
-          {/* HAND COUNT BADGE - Displays social proof of collaboration */}
           <div className="flex items-center gap-1 text-[10px] font-mono text-primary/70 mb-3 uppercase tracking-tighter">
-            <Hand className="w-3 h-3" />
-            <span>{project.project_collaborations?.[0]?.count || 0} HANDS_RAISED</span>
+            <span>{project.project_collaborations?.[0]?.count || 0} Hands Raised</span>
           </div>
 
-          {/* Description */}
           <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-4">
             {project.description}
           </p>
 
-          {/* Tech Stack */}
           {techTags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-4">
               {techTags.map((tag) => (
@@ -112,13 +104,12 @@ const ProjectCard = ({ project, onRefresh, onEdit }) => {
             </div>
           )}
 
-          {/* SUPPORT REQUIRED SECTION */}
           {project.support_required && project.support_required !== "false" && (
             <div className="mb-4 p-3 rounded-md bg-primary/5 border border-primary/10 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-1 h-full bg-primary/40" />
               <div className="flex items-center gap-2 mb-1">
                 <HelpCircle className="w-3 h-3 text-primary animate-pulse" />
-                <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Support_Required</span>
+                <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Support Required</span>
               </div>
               <p className="text-[11px] text-muted-foreground italic leading-relaxed line-clamp-2">
                 "{project.support_required}"
@@ -126,7 +117,6 @@ const ProjectCard = ({ project, onRefresh, onEdit }) => {
             </div>
           )}
 
-          {/* Footer */}
           <div className="flex items-center justify-between pt-3 border-t border-border">
             {project.created_at && (
               <span className="text-xs font-mono text-muted-foreground">
@@ -175,8 +165,8 @@ const ProjectCard = ({ project, onRefresh, onEdit }) => {
                       onClick={handleRaiseHand}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors neon-border relative z-10"
                     >
-                      <Hand className="w-3.5 h-3.5" />
-                      Raise Hand
+                     
+                      Raise hand
                     </button>
                   )}
                   {project.status === "Shipped" && (

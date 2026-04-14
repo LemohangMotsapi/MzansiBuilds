@@ -41,9 +41,6 @@ const Auth = () => {
         className="w-full max-w-sm relative"
       >
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-lg bg-primary/10 neon-border flex items-center justify-center mx-auto mb-4">
-            <Terminal className="w-6 h-6 text-primary" />
-          </div>
           <h1 className="text-2xl font-bold text-foreground">
             {isLogin ? "Welcome Back" : "Join MzansiBuilds"}
           </h1>
@@ -90,7 +87,6 @@ const Auth = () => {
             className="w-full flex items-center justify-center gap-2 py-2.5 rounded-md text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
             {loading ? "Loading..." : isLogin ? "Sign In" : "Create Account"}
-            <ArrowRight className="w-4 h-4" />
           </button>
         </form>
 

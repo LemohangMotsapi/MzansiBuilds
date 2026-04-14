@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Rocket, Terminal, ArrowDown, Plus, RefreshCw } from "lucide-react";
+import { Rocket, ArrowDown, Plus, RefreshCw } from "lucide-react";
 import api from "../api";
 import { useAuth } from "../context/AuthContext";
 import ProjectCard from "../components/ProjectCard";
@@ -16,7 +16,6 @@ const Home = () => {
   const fetchProjects = useCallback(async () => {
     try {
       const res = await api.get("/projects");
-      // FIXED: Pointing exactly to your Express backend's JSON structure
       setProjects(res.data.projects || res.data || []);
     } catch (error) {
       console.error("Failed to fetch projects", error);
@@ -50,7 +49,7 @@ const Home = () => {
             <div className="flex items-center gap-2 mb-4">
               <span className="status-dot-in-progress" />
               <span className="text-xs font-mono text-primary uppercase tracking-widest">
-                Live Engineering Log
+                
               </span>
             </div>
             <h1 className="text-4xl md:text-6xl font-black text-foreground tracking-tight leading-none mb-4">
@@ -86,8 +85,8 @@ const Home = () => {
       <section id="feed" className="container mx-auto px-4 py-12">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div className="flex items-center gap-2">
-            <Terminal className="w-5 h-5 text-primary" />
-            <h2 className="text-xl font-bold text-foreground">Engineering Log</h2>
+            {/* Removed Terminal Icon from here */}
+            <h2 className="text-xl font-bold text-foreground">Feed</h2>
             <span className="text-xs font-mono text-muted-foreground bg-secondary px-2 py-0.5 rounded">
               {filtered.length}
             </span>
@@ -129,7 +128,6 @@ const Home = () => {
             animate={{ opacity: 1 }}
             className="text-center py-20"
           >
-            <Rocket className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground text-sm">No projects yet. Be the first to ship!</p>
           </motion.div>
         ) : (

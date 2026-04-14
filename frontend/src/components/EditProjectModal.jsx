@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Save, Rocket, Cpu, HelpCircle, Link as LinkIcon } from "lucide-react";
+import { X, HelpCircle } from "lucide-react"; // Removed unused icons
 import api from "../api";
 import { toast } from "sonner";
 
@@ -10,7 +10,7 @@ const EditProjectModal = ({ project, isOpen, onClose, onUpdate }) => {
     status: "In Progress",
     tech_stack: "",
     support_required: "",
-    live_url: "" // Added field
+    live_url: ""
   });
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const EditProjectModal = ({ project, isOpen, onClose, onUpdate }) => {
         status: project.status || "In Progress",
         tech_stack: project.tech_stack || "",
         support_required: project.support_required || "",
-        live_url: project.live_url || "" // Sync from DB
+        live_url: project.live_url || "" 
       });
     }
   }, [project]);
@@ -51,7 +51,8 @@ const EditProjectModal = ({ project, isOpen, onClose, onUpdate }) => {
       <div className="bg-card border border-border w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
         <div className="p-6 border-b border-border flex justify-between items-center bg-secondary/10">
           <h2 className="text-xl font-bold font-mono flex items-center gap-2 text-primary">
-            <Cpu className="w-5 h-5" /> EDIT PROJECT
+            {/* Removed Cpu Icon */}
+            EDIT PROJECT
           </h2>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
             <X className="w-6 h-6" />
@@ -103,10 +104,9 @@ const EditProjectModal = ({ project, isOpen, onClose, onUpdate }) => {
             />
           </div>
 
-          {/* New Live URL Field for Editing */}
           <div className="space-y-1">
             <label className="text-[10px] font-mono uppercase text-muted-foreground flex items-center gap-1">
-              <LinkIcon className="w-3 h-3" /> Deployment Link (Live URL)
+              Deployment Link (Live URL)
             </label>
             <input
               type="url"
@@ -130,8 +130,7 @@ const EditProjectModal = ({ project, isOpen, onClose, onUpdate }) => {
             type="submit"
             className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-[0_0_20px_-5px_rgba(34,197,94,0.4)]"
           >
-            {formData.status === "Shipped" ? <Rocket className="w-5 h-5" /> : <Save className="w-5 h-5" />}
-            {formData.status === "Shipped" ? "EDIT PROJECT" : "UPDATE PROJECT"}
+            {formData.status === "Shipped" ? "EDIT PROJECT" : "UPDATE"}
           </button>
         </form>
       </div>

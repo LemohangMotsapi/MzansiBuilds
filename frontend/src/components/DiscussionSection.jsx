@@ -53,7 +53,6 @@ const DiscussionSection = ({ projectId, discussions, onRefresh, user }) => {
     }
   };
 
-  // Helper function to highlight mentions in the text
   const formatContent = (text) => {
     return text.split(" ").map((word, i) => {
       if (word.startsWith("@")) {
@@ -71,7 +70,6 @@ const DiscussionSection = ({ projectId, discussions, onRefresh, user }) => {
           {replyingTo && (
             <div className="flex justify-between items-center bg-primary/10 px-3 py-1.5 rounded-t-lg border-x border-t border-primary/20 text-[10px] font-mono text-primary animate-in slide-in-from-bottom-2">
               <span className="flex items-center gap-1">
-                <CornerDownRight className="w-3 h-3" />
                 REPLYING_TO: @{replyingTo.username}
               </span>
               <button type="button" onClick={() => { setReplyingTo(null); setContent(""); }}>
@@ -126,12 +124,10 @@ const DiscussionSection = ({ projectId, discussions, onRefresh, user }) => {
                     onClick={() => handleReplyClick(parent)}
                     className="text-[10px] font-mono text-primary flex items-center gap-1 hover:underline"
                   >
-                    <MessageSquare className="w-3 h-3" />
                     Reply
                   </button>
                 </div>
 
-                {/* Replies with Vertical Connector Line */}
                 {replies.length > 0 && (
                   <div className="ml-10 space-y-4">
                     {!isExpanded ? (
@@ -158,7 +154,6 @@ const DiscussionSection = ({ projectId, discussions, onRefresh, user }) => {
                                     <div className="flex items-center gap-2">
                                       <span className="text-[11px] font-bold text-foreground">@{reply.users?.username}</span>
                                       
-                                      {/* THE FIX: Small badge showing the specific context of the reply */}
                                       {mentionedUser && (
                                         <div className="flex items-center gap-1 px-1 py-0.5 rounded-full bg-secondary/50 border border-border/50">
                                           <CornerDownRight className="w-2 h-2 text-muted-foreground" />

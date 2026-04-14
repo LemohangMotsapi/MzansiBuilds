@@ -36,7 +36,7 @@ const CelebrationWall = () => {
           >
             <Trophy className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
             <h1 className="text-3xl md:text-5xl font-black text-foreground tracking-tight mb-3">
-              Hall of <span className="text-yellow-400">Fame</span>
+              Celebration <span className="text-yellow-400">Wall</span>
             </h1>
             <p className="text-muted-foreground max-w-md mx-auto">
               Celebrating shipped projects from South Africa's dev community.
@@ -64,13 +64,11 @@ const CelebrationWall = () => {
               const techTags = project.tech_stack
                 ? project.tech_stack.split(",").map((t) => t.trim()).filter(Boolean)
                 : [];
-
-              // 2. Logic for Clapping
               const handleClap = async (e) => {
                 e.stopPropagation();
                 try {
                   await api.post(`/projects/${project.id}/clap`);
-                  toast.success("👏 Achievement acknowledged");
+                  toast.success("Achievement acknowledged");
                   fetchShipped(); // Refresh data to show new count
                 } catch (err) {
                   toast.error("Sign in to cheer them on!");
@@ -121,7 +119,7 @@ const CelebrationWall = () => {
 
                     <div className="flex items-center justify-between pt-4 border-t border-border">
                       <div className="flex items-center gap-3">
-                        {/* 👏 CLAP BUTTON */}
+                        {/* CLAP BUTTON */}
                         <motion.button
                           whileTap={{ scale: 1.4 }}
                           onClick={handleClap}
@@ -136,7 +134,7 @@ const CelebrationWall = () => {
                         </span>
                       </div>
 
-                      {/* 🔗 VIEW LIVE LINK */}
+                      {/*VIEW LIVE LINK */}
                       {project.live_url && (
                         <a
                           href={project.live_url}
@@ -144,7 +142,7 @@ const CelebrationWall = () => {
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition-colors"
                         >
-                          VIEW_LIVE
+                          Deployed Site
                           <ExternalLink className="w-3.5 h-3.5" />
                         </a>
                       )}

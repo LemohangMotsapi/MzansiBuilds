@@ -14,7 +14,6 @@ const MyShips = () => {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   
-  // NEW STATES FOR EDITING
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [projectToEdit, setProjectToEdit] = useState(null);
 
@@ -33,7 +32,7 @@ const MyShips = () => {
     if (user) fetchMyProjects();
   }, [user, fetchMyProjects]);
 
-  // NEW HANDLER FOR EDITING
+ 
   const handleEditInitiated = (project) => {
     setProjectToEdit(project);
     setEditModalOpen(true);
@@ -47,10 +46,9 @@ const MyShips = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-              <Rocket className="w-6 h-6 text-primary" />
               My Ships
             </h1>
-            <p className="text-sm text-muted-foreground mt-1">Your build-in-public journey</p>
+            <p className="text-sm text-muted-foreground mt-1">Your build-in public journey</p>
           </div>
           <button
             onClick={() => setModalOpen(true)}
@@ -73,7 +71,6 @@ const MyShips = () => {
             animate={{ opacity: 1 }}
             className="text-center py-20"
           >
-            <Rocket className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-muted-foreground text-sm mb-4">No ships yet. Start building!</p>
             <button
               onClick={() => setModalOpen(true)}

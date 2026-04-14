@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
-import { Terminal, LogOut, Rocket, Trophy, Menu, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -10,9 +10,9 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const navLinks = [
-    { to: "/", label: "Feed", icon: Terminal },
-    { to: "/my-ships", label: "My Ships", icon: Rocket },
-    { to: "/celebration", label: "Celebration Wall", icon: Trophy },
+    { to: "/", label: "Feed" },
+    { to: "/my-ships", label: "My Ships" },
+    { to: "/celebration", label: "Celebration Wall" },
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -25,27 +25,22 @@ const Navbar = () => {
     >
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded bg-primary/10 neon-border flex items-center justify-center">
-            <Terminal className="w-4 h-4 text-primary" />
-          </div>
           <span className="font-bold text-lg tracking-tight text-foreground">
             Mzansi<span className="neon-text">Builds</span>
           </span>
         </Link>
 
-        {/* Desktop */}
         <div className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                 isActive(link.to)
                   ? "bg-primary/10 text-primary neon-border"
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
             >
-              <link.icon className="w-4 h-4" />
               {link.label}
             </Link>
           ))}
@@ -74,7 +69,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile toggle */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden text-muted-foreground hover:text-foreground"
@@ -83,7 +77,6 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile menu */}
       {menuOpen && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -95,13 +88,12 @@ const Navbar = () => {
               key={link.to}
               to={link.to}
               onClick={() => setMenuOpen(false)}
-              className={`flex items-center gap-2 px-4 py-3 rounded-md text-sm font-medium ${
+              className={`block px-4 py-3 rounded-md text-sm font-medium ${
                 isActive(link.to)
                   ? "text-primary bg-primary/10"
                   : "text-muted-foreground"
               }`}
             >
-              <link.icon className="w-4 h-4" />
               {link.label}
             </Link>
           ))}

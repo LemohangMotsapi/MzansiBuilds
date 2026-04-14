@@ -44,7 +44,6 @@ const MilestoneModal = ({ isOpen, onClose, projectId, onRefresh }) => {
           {/* Header */}
           <div className="p-6 border-b border-border flex justify-between items-center bg-secondary/30">
             <h2 className="text-xl font-bold flex items-center gap-2">
-              <Zap className="w-5 h-5 text-primary fill-primary/20" />
               Log Milestone
             </h2>
             <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
