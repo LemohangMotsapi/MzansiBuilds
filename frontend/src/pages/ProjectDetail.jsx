@@ -65,7 +65,7 @@ const ProjectDetail = () => {
           {/* Engineering Timeline */}
           <section>
             <div className="flex items-center gap-2 mb-6 border-b border-border pb-2">
-              <h2 className="text-xl font-semibold">Timeline</h2>
+              <h2 className="text-xl font-semibold">Milestones</h2>
             </div>
             
             <div className="space-y-6">
