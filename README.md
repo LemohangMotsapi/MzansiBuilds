@@ -61,3 +61,6 @@ The primary goal of MzansiBuilds is to provide a transparent live feed of develo
     * Navigate to `/frontend`
     * Run `npm install`
     * Run `npm run dev`
+
+## Deployed Site
+    Link: [text](https://mzansibuilds-frontend.onrender.com)
