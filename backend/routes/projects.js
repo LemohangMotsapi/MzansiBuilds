@@ -23,7 +23,7 @@ router.get('/celebrations', async (req, res) => {
   try {
     const { data: projects, error } = await supabase
       .from('projects')
-      .select('*, users (username), project_collaborations(count)') 
+      .select('*, users (username), live_url, project_collaborations(count), clap_count:project_claps(count)') 
       .eq('status', 'Shipped')
       .order('created_at', { ascending: false });
 
@@ -91,6 +91,21 @@ router.post('/:id/collaborate', authenticateToken, async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+router.post("/:id/clap", authenticateToken, async(req,res) => {
+  const { id }= req.params;
+  const userId = req.user.id;
+
+  const{ error } = await supabase
+    .from("project_claps")
+    .insert([{project_id: parseInt(id), user_id:userId}]);
+
+  if (error){
+    console.error("Clap Error:", error);
+    return res.status(400).json({ error: error.message });
+  }
+  res.json({ message: "CLAP SUCCESSFUL" });
 });
 
 router.put('/:id', authenticateToken, async (req, res) => {

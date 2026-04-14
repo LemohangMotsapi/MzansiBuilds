@@ -1,29 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Trophy, Star } from "lucide-react";
+import { Trophy, Star, ExternalLink } from "lucide-react";
 import api from "../api";
+import { toast } from "sonner";
 
 const CelebrationWall = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchShipped = async () => {
-      try {
-        const res = await api.get("/projects/celebrations?status=Shipped");
-        setProjects(res.data.projects || res.data || []);
-      } catch {
-        console.error("Failed to fetch shipped projects");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchShipped();
+  // 1. Define fetch as a stable function so we can reuse it after clapping
+  const fetchShipped = useCallback(async () => {
+    try {
+      const res = await api.get("/projects/celebrations?status=Shipped");
+      setProjects(res.data.projects || res.data || []);
+    } catch {
+      console.error("Failed to fetch shipped projects");
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchShipped();
+  }, [fetchShipped]);
 
   return (
     <div className="min-h-screen pt-16">
-      {/* Hero */}
+      {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-border">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(217_91%_60%/0.08),transparent_60%)]" />
         <div className="container mx-auto px-4 py-16 md:py-24 text-center relative">
@@ -42,7 +45,7 @@ const CelebrationWall = () => {
         </div>
       </section>
 
-      {/* Grid */}
+      {/* Grid Section */}
       <section className="container mx-auto px-4 py-12">
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -61,6 +64,20 @@ const CelebrationWall = () => {
               const techTags = project.tech_stack
                 ? project.tech_stack.split(",").map((t) => t.trim()).filter(Boolean)
                 : [];
+
+              // 2. Logic for Clapping
+              const handleClap = async (e) => {
+                e.stopPropagation();
+                try {
+                  await api.post(`/projects/${project.id}/clap`);
+                  toast.success("👏 Achievement acknowledged");
+                  fetchShipped(); // Refresh data to show new count
+                } catch (err) {
+                  toast.error("Sign in to cheer them on!");
+                }
+              };
+
+              const clapCount = project.clap_count?.[0]?.count || 0;
 
               return (
                 <motion.div
@@ -84,11 +101,13 @@ const CelebrationWall = () => {
                       </div>
                       <Trophy className="w-5 h-5 text-yellow-400 opacity-50 group-hover:opacity-100 transition-opacity" />
                     </div>
+                    
                     <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-4">
                       {project.description}
                     </p>
+
                     {techTags.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5">
+                      <div className="flex flex-wrap gap-1.5 mb-4">
                         {techTags.map((tag) => (
                           <span
                             key={tag}
@@ -99,11 +118,37 @@ const CelebrationWall = () => {
                         ))}
                       </div>
                     )}
-                    {project.created_at && (
-                      <p className="text-xs font-mono text-muted-foreground mt-4 pt-3 border-t border-border">
-                        Shipped {new Date(project.created_at).toLocaleDateString("en-ZA")}
-                      </p>
-                    )}
+
+                    <div className="flex items-center justify-between pt-4 border-t border-border">
+                      <div className="flex items-center gap-3">
+                        {/* 👏 CLAP BUTTON */}
+                        <motion.button
+                          whileTap={{ scale: 1.4 }}
+                          onClick={handleClap}
+                          className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 hover:bg-yellow-500/20 transition-all"
+                        >
+                          <span className="text-sm">👏</span>
+                          <span className="text-xs font-bold">{clapCount}</span>
+                        </motion.button>
+
+                        <span className="text-[10px] font-mono text-muted-foreground uppercase">
+                           {new Date(project.created_at).toLocaleDateString("en-ZA")}
+                        </span>
+                      </div>
+
+                      {/* 🔗 VIEW LIVE LINK */}
+                      {project.live_url && (
+                        <a
+                          href={project.live_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition-colors"
+                        >
+                          VIEW_LIVE
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               );
