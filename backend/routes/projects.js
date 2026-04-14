@@ -49,11 +49,11 @@ router.get('/', async(req,res) => {
 
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { title, description, tech_stack, support_required, status} = req.body;
+    const { title, description, tech_stack, support_required, status, live_url} = req.body;
     const userId = req.user.id;
     const { data: project, error } = await supabase
       .from('projects')
-      .insert([{ title, description, tech_stack, support_required, user_id: userId, status }])
+      .insert([{ title, description, tech_stack, support_required, user_id: userId, status, live_url }])
       .select().single();
     if (error) throw error;
     res.status(201).json({ project });

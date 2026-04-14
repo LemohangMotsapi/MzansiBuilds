@@ -136,10 +136,11 @@ const ProjectDetail = () => {
                 <span>{new Date(project.created_at).toLocaleDateString()}</span>
               </div>
             </div>
-
+                {/*
             <button className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
               <Share2 className="w-4 h-4" /> SHARE PROJECT
             </button>
+            */}
           </div>
         </aside>
       </div>

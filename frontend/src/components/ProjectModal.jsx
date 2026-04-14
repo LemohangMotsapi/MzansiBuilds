@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Rocket, HelpCircle } from "lucide-react";
+import { X, Rocket, HelpCircle, Link as LinkIcon } from "lucide-react";
 import api from "../api";
 import { toast } from "sonner";
 
@@ -10,8 +10,9 @@ const ProjectModal = ({ isOpen, onClose, refreshProjects }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tech_stack, setTechStack] = useState("");
-  const [support_required, setSupportRequired] = useState(""); // Added state
+  const [support_required, setSupportRequired] = useState("");
   const [status, setStatus] = useState("Researching");
+  const [live_url, setLiveUrl] = useState(""); // Added state
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -27,14 +28,19 @@ const ProjectModal = ({ isOpen, onClose, refreshProjects }) => {
         description, 
         tech_stack, 
         status, 
-        support_required // Added to payload
+        support_required,
+        live_url // Included in payload
       });
-      toast.success("Project shipped to the feed! 🚀");
+      toast.success("Project shipped to the feed!");
+      
+      // Reset all states
       setTitle("");
       setDescription("");
       setTechStack("");
       setSupportRequired("");
       setStatus("Researching");
+      setLiveUrl("");
+      
       if (refreshProjects) refreshProjects();
       onClose();
     } catch {
@@ -113,6 +119,21 @@ const ProjectModal = ({ isOpen, onClose, refreshProjects }) => {
                   rows={3}
                   placeholder="What are you building and why?"
                   className="w-full px-3 py-2.5 rounded-md bg-secondary border border-border text-foreground text-sm focus:ring-1 focus:ring-primary outline-none resize-none"
+                />
+              </div>
+
+              {/* Added Live URL Field */}
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5 flex items-center gap-2">
+                  <LinkIcon className="w-3.5 h-3.5 text-muted-foreground" /> 
+                  Live Project Link <span className="text-[10px] text-muted-foreground">(Optional)</span>
+                </label>
+                <input
+                  type="url"
+                  value={live_url}
+                  onChange={(e) => setLiveUrl(e.target.value)}
+                  placeholder="https://your-demo-link.com"
+                  className="w-full px-3 py-2.5 rounded-md bg-secondary border border-border text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
                 />
               </div>
 

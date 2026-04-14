@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Save, Rocket, Cpu, HelpCircle } from "lucide-react";
+import { X, Save, Rocket, Cpu, HelpCircle, Link as LinkIcon } from "lucide-react";
 import api from "../api";
 import { toast } from "sonner";
 
@@ -9,7 +9,8 @@ const EditProjectModal = ({ project, isOpen, onClose, onUpdate }) => {
     description: "",
     status: "In Progress",
     tech_stack: "",
-    support_required: "" // Added field
+    support_required: "",
+    live_url: "" // Added field
   });
 
   useEffect(() => {
@@ -19,7 +20,8 @@ const EditProjectModal = ({ project, isOpen, onClose, onUpdate }) => {
         description: project.description || "",
         status: project.status || "In Progress",
         tech_stack: project.tech_stack || "",
-        support_required: project.support_required || "" // Sync from DB
+        support_required: project.support_required || "",
+        live_url: project.live_url || "" // Sync from DB
       });
     }
   }, [project]);
@@ -97,6 +99,20 @@ const EditProjectModal = ({ project, isOpen, onClose, onUpdate }) => {
             <input
               value={formData.tech_stack}
               onChange={(e) => setFormData({...formData, tech_stack: e.target.value})}
+              className="w-full bg-secondary/30 border border-border rounded-lg p-3 text-sm focus:ring-1 focus:ring-primary outline-none"
+            />
+          </div>
+
+          {/* New Live URL Field for Editing */}
+          <div className="space-y-1">
+            <label className="text-[10px] font-mono uppercase text-muted-foreground flex items-center gap-1">
+              <LinkIcon className="w-3 h-3" /> Deployment Link (Live URL)
+            </label>
+            <input
+              type="url"
+              value={formData.live_url}
+              onChange={(e) => setFormData({...formData, live_url: e.target.value})}
+              placeholder="https://deployed-project.com"
               className="w-full bg-secondary/30 border border-border rounded-lg p-3 text-sm focus:ring-1 focus:ring-primary outline-none"
             />
           </div>
