@@ -1,0 +1,17 @@
+name: Minikube runner test
+
+on: 
+  workflow_dispatch;
+permissions:
+  contents: read
+
+jobs:
+  smoke-test:
+    runs-on: arc-runner-set
+    timeout-minutes: 5
+    steps:
+      - name: Show enviroment
+        run: |
+          echo "Running inside minikube"
+          hostname
+          uname -a
