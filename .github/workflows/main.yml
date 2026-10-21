@@ -20,4 +20,3 @@ jobs:
           yq --version
           jq --version
           cx version
-          podman --version
