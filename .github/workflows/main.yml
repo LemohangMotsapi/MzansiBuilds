@@ -15,8 +15,9 @@ jobs:
           echo "Running inside minikube"
           hostname
           uname -a
-          minikube version
           kubectl version --client
-          kubectl cluster-info
-          kubectl get nodes
-          kubectl get pods --all-namespaces
+          helm version --short
+          yq --version
+          jq --version
+          cx version
+          podman --version
