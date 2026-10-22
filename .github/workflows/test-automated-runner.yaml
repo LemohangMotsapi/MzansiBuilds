@@ -1,1 +1,38 @@
+name: Test automated runner pool
 
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: minikube-dev-auto
+
+    timeout-minutes: 10
+
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        instance: [1, 2]
+
+    steps:
+      - name: Verify custom runner
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Instance: ${{ matrix.instance }}"
+          hostname
+          uname -a
+
+          helm version --short
+          kubectl version --client
+          yq --version
+          jq --version
+
+      - name: Keep jobs active to observe scaling
+        shell: bash
+        run: sleep 60
