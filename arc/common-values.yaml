@@ -1,1 +1,29 @@
+githubConfigUrl: "https://github.com/LemohangMotsapi/MzansiBuilds"
+githubConfigSecret: github-arc-auth
 
+controllerServiceAccount:
+  namespace: arc-systems
+  name: arc-gha-rs-controller
+
+githubServerTLS:
+  certificateFrom:
+    configMapKeyRef:
+      name: corporate-ca
+      key: ca.crt
+  runnerMountPath: /usr/local/share/ca-certificates/
+
+template:
+  spec:
+    containers:
+      - name: runner
+        image: docker.io/verniciavezi/cd-image-v1:latest
+        imagePullPolicy: IfNotPresent
+        workingDir: /opt/actions-runner
+        command: ["/opt/actions-runner/run.sh"]
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "1"
+            memory: "1Gi"
