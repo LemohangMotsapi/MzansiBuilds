@@ -1,1 +1,9 @@
+runnerScaleSetName: minikube-runner-manager
 
+minRunners: 1
+maxRunners: 1
+
+template:
+  spec:
+    serviceAccountName: runner-provisioner
+    automountServiceAccountToken: true
