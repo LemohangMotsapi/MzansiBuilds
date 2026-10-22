@@ -1,1 +1,136 @@
 
+name: Provision Minikube runner pool
+
+on:
+  workflow_dispatch:
+    inputs:
+      pool:
+        description: Application runner pool to create or update
+        required: true
+        type: choice
+        options:
+          - minikube-dev-auto
+          - minikube-dev-tools
+
+      max_runners:
+        description: Maximum runners for this pool
+        required: true
+        default: "2"
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "3"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: minikube-runner-provisioning
+  cancel-in-progress: false
+
+jobs:
+  provision:
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+
+    runs-on: minikube-runner-manager
+
+    environment: minikube-management
+
+    timeout-minutes: 20
+
+    env:
+      ARC_VERSION: "0.15.0"
+      TARGET_NAMESPACE: arc-runners
+      POOL: ${{ inputs.pool }}
+      MAX_RUNNERS: ${{ inputs.max_runners }}
+
+    steps:
+      - name: Check out approved configuration
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Provision application runner pool
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+
+          case "$POOL" in
+            minikube-dev-auto|minikube-dev-tools) ;;
+            *)
+              echo "::error::Unsupported runner pool"
+              exit 1
+              ;;
+          esac
+
+          case "$MAX_RUNNERS" in
+            1|2|3) ;;
+            *)
+              echo "::error::Unsupported runner limit"
+              exit 1
+              ;;
+          esac
+
+          helm version --short
+          kubectl version --client
+
+          SA_DIR=/var/run/secrets/kubernetes.io/serviceaccount
+
+          test -s "$SA_DIR/token"
+          test -s "$SA_DIR/ca.crt"
+
+          : "${KUBERNETES_SERVICE_HOST:?Kubernetes API host is missing}"
+          : "${KUBERNETES_SERVICE_PORT_HTTPS:?Kubernetes API port is missing}"
+
+          export KUBECONFIG
+          KUBECONFIG="$(mktemp "$RUNNER_TEMP/provision-kubeconfig.XXXXXX")"
+          trap 'rm -f "$KUBECONFIG"' EXIT
+
+          cat > "$KUBECONFIG" <<EOF
+          apiVersion: v1
+          kind: Config
+          clusters:
+            - name: in-cluster
+              cluster:
+                server: https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT_HTTPS}
+                certificate-authority: ${SA_DIR}/ca.crt
+          users:
+            - name: runner-provisioner
+              user:
+                tokenFile: ${SA_DIR}/token
+          contexts:
+            - name: provisioning
+              context:
+                cluster: in-cluster
+                user: runner-provisioner
+                namespace: ${TARGET_NAMESPACE}
+          current-context: provisioning
+          EOF
+
+          kubectl auth can-i create autoscalingrunnersets.actions.github.com \
+            --namespace "$TARGET_NAMESPACE" |
+            grep -qx yes
+
+          helm upgrade --install "$POOL" \
+            oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set \
+            --namespace "$TARGET_NAMESPACE" \
+            --version "$ARC_VERSION" \
+            --reset-values \
+            --values arc/common-values.yaml \
+            --values arc/application-values.yaml \
+            --set-string runnerScaleSetName="$POOL" \
+            --set maxRunners="$MAX_RUNNERS" \
+            --wait \
+            --timeout 10m
+
+          kubectl wait autoscalingrunnerset "$POOL" \
+            --namespace "$TARGET_NAMESPACE" \
+            --for=jsonpath='{.status.phase}'=Running \
+            --timeout=5m
+
+          kubectl get autoscalingrunnerset "$POOL" \
+            --namespace "$TARGET_NAMESPACE"
+
+          echo "Provisioned runner pool: $POOL"
