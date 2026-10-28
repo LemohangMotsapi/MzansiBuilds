@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: minikube-dev-tools
+    runs-on: non-prod-runner
 
     timeout-minutes: 10
 
