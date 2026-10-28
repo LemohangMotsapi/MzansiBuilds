@@ -59,7 +59,7 @@ jobs:
           umask 077
 
           case "$POOL" in
-            minikube-dev-auto|minikube-dev-tools) ;;
+            minikube-dev-auto|minikube-dev-tools|non-prod-runner) ;;
             *)
               echo "::error::Unsupported runner pool"
               exit 1
