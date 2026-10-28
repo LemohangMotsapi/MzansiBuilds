@@ -11,6 +11,7 @@ on:
         options:
           - minikube-dev-auto
           - minikube-dev-tools
+          - non-prod-runner
 
       max_runners:
         description: Maximum runners for this pool
